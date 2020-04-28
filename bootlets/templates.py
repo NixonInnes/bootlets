@@ -45,12 +45,17 @@ Li = ListItem
 @inject('build_classes')
 class UnorderedList(Base):
     funcs = ['get_items']
-    defaults = {'ItemClass': ListItem}
+    defaults = {
+        'ItemClass': ListItem,
+        'item_args': [],
+        'item_kwargs': {}
+    }
     block = "<ul{build_classes}>{get_items}</ul>"
 
     def get_items(self):
         ItemClass = self.get('ItemClass')
         if ItemClass:
-            return '\n'.join([ItemClass(arg).draw() for arg in self.args])
+            return '\n'.join([ItemClass(arg, *self.get('item_args'),
+                                        **self.get('item_kwargs')).draw() for arg in self.args])
         return '\n'.join(self.args)
 

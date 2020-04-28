@@ -38,23 +38,25 @@ class Base:
     def map_(self): # Returns a dict which we use in formatting the block of html
         map_ = {}
 
+        # Order of precedence: defaults < arg_map < kwargs < funcs
+
+        for key, obj in self.defaults.items():
+            if key in self.arg_names:
+                self.logger.warn(f'{self.__class__.__name__}() default and positional argument '+
+                                 f'with same name \'{key}\'. Argument will take precedence')
+            map_[key] = try_draw(obj)
+
         for arg, obj in self.arg_map.items():
             map_[arg] = try_draw(obj)
 
-        for key, obj in self.defaults.items():
-            if key in map_:
-                self.logger.warn(f'{self.__class__.__name__}() default \'{key}\' '+
-                                     f' overwriting positional argument with same name')
-            map_[key] = try_draw(obj)
-
         for key, obj in self.kwargs.items():
-            if key in map_:
+            if key in self.arg_names:
                 self.logger.warn(f'{self.__class__.__name__}() keyword argument \'{key}\' '+
-                                 f' overwriting positional argument with same name')
+                                 f'overwriting positional argument with same name')
             map_[key] = try_draw(obj)
 
         for f in self.funcs:
-            map_[f] = getattr(self, f)()
+            map_[f] = try_draw(getattr(self, f)())
 
         return map_
 
