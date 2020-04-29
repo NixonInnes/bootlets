@@ -6,13 +6,10 @@ BaseType = TypeVar('BaseType', bound='Base')
 def try_draw(obj: Any) -> str:
     try:
         return obj.draw()
-    except AttributeError:
-        try:
-            return '\n'.join([try_draw(o) for o in obj])
-        except TypeError:
-            pass
-    finally:
-        return str(obj)
+    except (AttributeError, TypeError):
+        pass
+
+    return str(obj)
 
 
 class Base:
