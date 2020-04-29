@@ -42,17 +42,18 @@ class UnorderedList(Base):
     funcs = ['get_items']
     defaults = {
         'ItemClass': ListItem,
-        'item_args': [],
         'item_kwargs': {}
     }
     block = '<ul{classes}>{get_items}</ul>'
 
     def get_items(self):
         ItemClass = self.get('ItemClass')
-        if ItemClass:
-            return '\n'.join([ItemClass(arg, *self.get('item_args'),
-                                        **self.get('item_kwargs')).draw() for arg in self.args])
-        return '\n'.join(self.args)
+        i_kwargs = selg.get('item_kwargs')
+        items = []
+        for arg in self.args:
+            item = ItemClass(arg, **i_kwargs) if ItemClass else arg
+            items.append(try_draw(item))
+        return '\n'.join(items)
 
 
 class DescriptionListTitle(Base):
@@ -68,7 +69,7 @@ class DescriptionListDesc(Base):
 
 
 class DescriptionList(Base):
-    arg_contracts = {'content': (str, list)}
+    arg_contracts = {'content': dict}
     funcs = ['get_items']
     defaults = {
         'TitleClass': DescriptionListTitle,
@@ -77,9 +78,19 @@ class DescriptionList(Base):
         'desc_kwargs': {},
         'class_': 'row'
     }
-    block = '<dl{class}>{get_items}</dl>'
+    block = '<dl{classes}>{get_items}</dl>'
 
     def get_items(self):
-        assert isinstance(self.get('content'), dict), f'Expected dictionary for '
+        TitleClass = self.get('TitleClass')
+        t_kwargs = self.get('title_kwargs')
+        DescClass = self.get('DescClass')
+        d_kwargs = self.get('desc_kwargs')
+
+        items = []
+        for key, value in self.get('content').items():
+            title = TitleClass(key, **t_kwargs) if TitleClass else key
+            desc = DescClass(value, **d_kwargs) if DescClass else value
+            items.append(try_draw(title) + try_draw(desc))
+        return '\n'.join(items)
 
 
