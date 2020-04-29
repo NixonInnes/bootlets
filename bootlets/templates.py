@@ -50,7 +50,7 @@ class UnorderedList(Base):
 
     def get_items(self):
         ItemClass = self.get('ItemClass')
-        i_kwargs = selg.get('item_kwargs')
+        i_kwargs = self.get('item_kwargs')
         items = []
         for arg in self.args:
             item = ItemClass(arg, **i_kwargs) if ItemClass else arg
