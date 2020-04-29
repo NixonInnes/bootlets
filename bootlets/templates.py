@@ -3,6 +3,7 @@ from .decorators import inject
 
 
 class Container(Base):
+    funcs = ['arg_content']
     block = '{arg_content}'
 
     def arg_content(self):
@@ -10,6 +11,7 @@ class Container(Base):
 
 
 class Div(Base):
+    funcs = ['arg_content']
     block = '<div{classes}>{arg_content}</div>'
 
     def arg_content(self):
