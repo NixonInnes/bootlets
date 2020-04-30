@@ -80,7 +80,7 @@ class Base:
 
 
     def build_classes(self):
-        classes  = self.kwargs.get('class_')
+        classes  = self.get('class_')
         if classes:
             if isinstance(classes, list):
                 return ' class="' + ' '.join(classes) + '"'
