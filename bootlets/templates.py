@@ -3,52 +3,33 @@ from .decorators import inject
 
 
 class Container(Base):
-    funcs = ['arg_content']
-    block = '{arg_content}'
-
-    def arg_content(self):
-        return '\n'.join([try_draw(arg) for arg in self.args])
+    block = '{content}'
 
 
 class Div(Base):
-    funcs = ['arg_content']
-    block = '<div{classes}>{arg_content}</div>'
+    tag = 'div'
 
-    def arg_content(self):
-        return '\n'.join([try_draw(arg) for arg in self.args])
+class P(Base):
+    tag = 'p'
 
-
-class Paragraph(Base):
-    arg_contracts = {'text': str}
-    block = '<p{classes}>{text}</p>'
-
-P = Paragraph
-
-
-class Header(Base):
-    arg_contracts = {'text': str}
+class H(Base):
+    tag = 'h'
     defaults = {'size': 1}
-    block = '<h{size}{classes}>{text}</h{size}>'
+    block = '<{tag}{size}{classes}>{content}</{tag}{size}>'
 
-H = Header
+class Li(Base):
+    tag = 'li'
 
+class Ul(Base):
+    tag = 'ul'
 
-class ListItem(Base):
-    arg_contracts = {'content': (str, list)}
-    block = '<li{classes}>{content}</li>'
-
-Li = ListItem
-
-
-class UnorderedList(Base):
-    funcs = ['get_items']
+class UlList(Ul):
     defaults = {
-        'ItemClass': ListItem,
+        'ItemClass': Li,
         'item_kwargs': {}
     }
-    block = '<ul{classes}>{get_items}</ul>'
 
-    def get_items(self):
+    def get_content(self):
         ItemClass = self.get('ItemClass')
         i_kwargs = self.get('item_kwargs')
         items = []
@@ -58,41 +39,68 @@ class UnorderedList(Base):
         return '\n'.join(items)
 
 
-class DescriptionListTitle(Base):
-    arg_contracts = {'content': (str, list)}
+class Dt(Base):
+    tag = 'dt'
     defaults = {'class_':'col-sm-3'}
-    block = '<dt{classes}>{content}</dt>'
 
 
-class DescriptionListDesc(Base):
-    arg_contracts = {'content': (str, list)}
+class Dd(Base):
+    tag = 'dd'
     defaults = {'class_':'col-sm-9'}
-    block = '<dd{classes}>{content}</dd>'
 
 
-class DescriptionList(Base):
-    arg_contracts = {'content': dict}
-    funcs = ['get_items']
+class Dl(Base):
+    tag = 'dl'
+
+class DlDict(Dl):
     defaults = {
-        'TitleClass': DescriptionListTitle,
+        'TitleClass': Dt,
         'title_kwargs': {},
-        'DescClass': DescriptionListDesc,
+        'DescClass': Dd,
         'desc_kwargs': {},
         'class_': 'row'
     }
-    block = '<dl{classes}>{get_items}</dl>'
 
-    def get_items(self):
+    def get_content(self):
         TitleClass = self.get('TitleClass')
         t_kwargs = self.get('title_kwargs')
         DescClass = self.get('DescClass')
         d_kwargs = self.get('desc_kwargs')
 
         items = []
-        for key, value in self.get('content').items():
-            title = TitleClass(key, **t_kwargs) if TitleClass else key
-            desc = DescClass(value, **d_kwargs) if DescClass else value
-            items.append(try_draw(title) + try_draw(desc))
+        for arg in self.args:
+            if isinstance(arg, dict):
+                for key, value in arg.items():
+                    title = TitleClass(key, **t_kwargs) if TitleClass else key
+                    desc = DescClass(value, **d_kwargs) if DescClass else value
+                    items.append(try_draw(title) + try_draw(desc))
+            else:
+                raise NotImplementerError()
         return '\n'.join(items)
 
+class Del(Base):
+    tag = 'del'
 
+class S(Base):
+    tag = 's'
+
+class Ins(Base):
+    tag = 'ins'
+
+class U(Base):
+    tag = 'u'
+
+class Small(Base):
+    tag = 'small'
+
+class Strong(Base):
+    tag = 'strong'
+
+class Em(Base):
+    tag = 'em'
+
+class Abbr(Base):
+    tag = 'abbr'
+    defaults = {
+        'title': 'attribute'
+    }

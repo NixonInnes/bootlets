@@ -16,23 +16,14 @@ class Base:
     arg_contracts: Dict[str, Callable] = {}
     defaults: Dict[str, Any] = {}
     funcs: List[str] = []
-    block: str = ''
+    tag: str = ''
+    block: str = '<{tag}{classes}{kwargs}>{content}</{tag}>'
 
     def __init__(self, *args: Optional[Type[BaseType]],
                  **kwargs: Optional[Type[BaseType]]) -> None:
         self.logger = logging.getLogger(self.__class__.__name__)
 
         self.args = args
-        self.arg_map = {}
-        if self.arg_contracts:
-            if len(args) != len(self.arg_contracts):
-                raise TypeError(f'{self.__class__.__name__}() takes {len(self.arg_contracts)} '+
-                                f'positional arguments but {len(args)} were given')
-
-            self.arg_map = dict(zip(self.arg_contracts.keys(), args))
-
-            # TODO: Use the arg_contracts to do some type checking
-
         self.kwargs = kwargs
 
     def __repr__(self) -> str:
@@ -47,9 +38,14 @@ class Base:
         return s
 
 
-    def get(self, key, *args, **kwargs) -> Any:
-        return {**self.defaults, **self.arg_map, **self.kwargs}.get(key, *args, **kwargs)
+    def __call__(self, *args, **kwargs):
+        args = args if args else self.args
+        kwargs = kwargs if kwargs else self.kwargs
+        return self.__class__(*args, **kwargs)
 
+
+    def get(self, key, *args, **kwargs) -> Any:
+        return {**self.defaults, **self.kwargs}.get(key, *args, **kwargs)
 
     def map_(self) -> dict: # Returns a dict which we use in formatting the block of html
         map_ = {}
@@ -62,9 +58,6 @@ class Base:
                                  f'with same name \'{key}\'. Argument will take precedence')
             map_[key] = try_draw(obj)
 
-        for arg, obj in self.arg_map.items():
-            map_[arg] = try_draw(obj)
-
         for key, obj in self.kwargs.items():
             if key in self.arg_contracts:
                 self.logger.warn(f'{self.__class__.__name__}() keyword argument \'{key}\' '+
@@ -74,18 +67,34 @@ class Base:
         for f in self.funcs:
             map_[f] = try_draw(getattr(self, f)())
 
-        map_['classes'] = self.build_classes()
+        map_['tag'] = self.tag
+        map_['classes'] = self.get_classes()
+        map_['content'] = self.get_content()
+        map_['kwargs'] = self.get_kwargs()
 
         return map_
 
 
-    def build_classes(self):
+    def get_content(self):
+        return '\n'.join([try_draw(arg) for arg in self.args])
+
+
+    def get_classes(self):
         classes  = self.get('class_')
         if classes:
             if isinstance(classes, list):
                 return ' class="' + ' '.join(classes) + '"'
             return ' class="' + classes + '"'
         return ''
+
+    def get_kwargs(self):
+        s = ''
+        if self.kwargs:
+            for key, value in self.kwargs.items():
+                if key == 'class_':
+                    continue
+                s += f' {key}={value}'
+        return s
 
 
     def draw(self) -> str: # Format the block string using dict generated in map_()
