@@ -1,4 +1,5 @@
 import logging
+from inspect import isclass
 from typing import Optional, Any, Type, TypeVar, List, Dict, Callable
 
 BaseType = TypeVar('BaseType', bound='Base')
@@ -12,21 +13,55 @@ def try_draw(obj: Any) -> str:
     return str(obj)
 
 
+class TagDescriptor:
+    def __get__(self, obj, owner):
+        if hasattr(obj, '_tag') and obj._tag:
+            return obj._tag
+        if owner._tag:
+            return owner._tag
+        if len(owner.__mro__) > 3:
+            for mro in owner.__mro__[1:]:
+                if hasattr(mro, '_tag') and mro._tag:
+                    return mro._tag
+            return owner.__mro__[-3].__name__.lower()
+        return owner.__name__.lower()
+
+    def __set__(self, obj, value):
+        obj._tag = value
+
+    def __delete__(self, obj):
+        obj._tag = ''
+
+
+class BlockDescriptor:
+    def get_block(self, closing=True):
+        return '<{tag}{kwargs}>{content}</{tag}>' if closing else \
+               '<{tag}{kwargs} {content}>'
+
+    def __get__(self, obj, owner):
+        if obj._block:
+            return obj._block
+        if owner._block:
+            return owner._block
+        return self.get_block(owner.closing)
+
+    def __set__(self, value):
+        obj._block = value
+
+    def __delete__(self, obj):
+        obj._block = ''
+
+
 class Base:
     closing : bool = True
     arg_contracts: Dict[str, Callable] = {}
     defaults: Dict[str, Any] = {}
     skip_kwargs: List[str] = []
     funcs: List[str] = []
-    tag: str = ''
+    _tag: str = ''
+    tag = TagDescriptor()
     _block = ''
-
-    @property
-    def block(self) -> str:
-        if self._block:
-            return self._block
-        return '<{tag}{kwargs}>{content}</{tag}>' if self.closing else \
-                 '<{tag}{kwargs} {content}>'
+    block = BlockDescriptor()
 
     def __init__(self, *args: Optional[Type[BaseType]],
                  **kwargs: Optional[Type[BaseType]]) -> None:

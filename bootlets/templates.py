@@ -1,4 +1,5 @@
 from .base import Base, try_draw
+from .decorators import overwrite
 
 
 ###################################################################################################
@@ -17,25 +18,22 @@ class Comment(Base):
 
 
 class A(Base):
-    tag = 'a'
     defaults = {
         'href': '#'
     }
 
 
 class Abbr(Base):
-    tag = 'abbr'
     defaults = {
         'title': 'attribute'
     }
 
 
 class Address(Base):
-    tag = 'address'
+    pass
 
 
 class Area(Base):
-    tag = 'area'
     defaults = {
         'shape': 'rect',
         'coords': '0,0,0,0',
@@ -45,50 +43,47 @@ class Area(Base):
 
 
 class Article(Base):
-    tag = 'article'
+    pass
 
 
 class Aside(Base):
-    tag = 'aside'
+    pass
 
 
 class Audio(Base):
-    tag = 'audio'
+    pass
 
 
 ###################################################################################################
 # B
 
 class B(Base):
-    tag = 'b'
+    pass
 
 
 class Bdi(Base):
-    tag = 'bdi'
+    pass
 
 
 class Bdo(Base):
-    tag = 'bdo'
     defaults = {
         'dir': 'rtl'
     }
 
 
 class Blockquote(Base):
-    tag = 'blockquote'
+    pass
 
 
 class Body(Base):
-    tag = 'body'
+    pass
 
 
 class Br(Base):
     closing = False
-    tag = 'br'
 
 
 class Button(Base):
-    tag = 'button'
     defaults = {
         'type': 'button'
     }
@@ -98,65 +93,62 @@ class Button(Base):
 # C
 
 class Canvas(Base):
-    tag = 'canvas'
     defaults = {
         'id': 'myCanvas'
     }
 
 
 class Caption(Base):
-    tag = 'caption'
+    pass
 
 
 class Cite(Base):
-    tag = 'cite'
+    pass
 
 
 class Code(Base):
-    tag = 'code'
+    pass
 
 
 class Col(Base):
-    tag = 'col'
+    pass
 
 
 class ColGroup(Base):
-    tag = 'colgroup'
+    pass
+
 
 ###################################################################################################
 # D
 
 class Data(Base):
-    tag = 'data'
     defaults = {
         'value': 0
     }
 
 
 class DataList(Base):
-    tag = 'datalist'
     defaults = {
         'id': 'MyDataList'
     }
 
 class Dd(Base):
-    tag = 'dd'
+    pass
 
 
 class Del(Base):
-    tag = 'del'
+    pass
 
 
 class Details(Base):
-    tag = 'details'
+    pass
 
 
 class Dfn(Base):
-    tag = 'dfn'
+    pass
 
 
 class Dialog(Base):
-    tag = 'dialog'
     defaults = {
         '_open': True
     }
@@ -170,18 +162,25 @@ class Dialog(Base):
 
 
 class Div(Base):
-    tag = 'div'
+    pass
 
 
 class Dl(Base):
-    tag = 'dl'
+    pass
+
+
+@overwrite(get_content=('join_content_with', ' '))
+class DocType(Base):
+    _tag = 'DOCTYPE'
+    _block = '<!{tag} {content}>'
 
 
 class Dt(Base):
-    tag = 'dt'
+    pass
 
 
 class DlDict(Dl):
+    _tag = 'dl'
     TitleClass = Dt
     DescClass = Dd
     defaults = {
@@ -199,7 +198,9 @@ class DlDict(Dl):
                     desc = self.DescClass(value, **self.get('_desc_kwargs'))
                     items.append(try_draw(title) + try_draw(desc))
             else:
-                raise NotImplementerError()
+                #raise NotImplementerError()
+                # TODO: Raise warning or something better
+                continue
         return '\n'.join(items)
 
 
@@ -207,14 +208,40 @@ class DlDict(Dl):
 # E
 
 class Em(Base):
-    tag = 'em'
+    pass
 
+
+class Embed(Base):
+    defaults = {
+        'src': 'default.jpg',
+        'width': 100,
+        'height': 100
+    }
 
 ###################################################################################################
 # F
 
+class FieldSet(Base):
+    pass
+
+
+class FigCaption(Base):
+    pass
+
+
+class Figure(Base):
+    pass
+
+
 class Footer(Base):
-    tag = 'footer'
+    pass
+
+
+class Form(Base):
+    defaults = {
+        'action': '#',
+        'method': 'POST'
+    }
 
 
 ###################################################################################################
@@ -225,16 +252,50 @@ class Footer(Base):
 # H
 
 class H(Base):
-    tag = 'h'
     defaults = {'size': 1}
     block = '<{tag}{size}{kwargs}>{content}</{tag}{size}>'
+
+
+class Head(Base):
+    pass
+
+
+class Header(Base):
+    pass
 
 
 ###################################################################################################
 # I
 
+class I(Base):
+    pass
+
+
+class IFrame(Base):
+    defaults = {
+        'src': '#'
+    }
+
+
+class Img(Base):
+    defaults = {
+        'src': 'default.jpg',
+        'height': 100,
+        'width': 100,
+        'alt': 'default'
+    }
+
+
+class Input(Base):
+    defaults = {
+        'type': 'text',
+        'id': 'myInput',
+        'name': 'myInput'
+    }
+
+
 class Ins(Base):
-    tag = 'ins'
+    pass
 
 
 ###################################################################################################
@@ -244,69 +305,290 @@ class Ins(Base):
 ###################################################################################################
 # K
 
+class Kbd(Base):
+    pass
+
 
 ###################################################################################################
 # L
 
+class Label(Base):
+    defaults = {
+        'for': 'myInput'
+    }
+
+
+class Legend(Base):
+    pass
+
+
 class Li(Base):
-    tag = 'li'
+    pass
+
+
+class Link(Base):
+    defaults = {
+        'rel': 'stylesheet',
+        'type': 'text/css',
+        'href': 'styles.css'
+    }
 
 
 ###################################################################################################
 # M
 
+class Main(Base):
+    pass
+
+
+class Map(Base):
+    defaults = {
+        'name': 'myMap'
+    }
+
+
+class Mark(Base):
+    pass
+
+
+class Meta(Base):
+    pass
+
+
+class Meter(Base):
+    defaults = {
+        'id': 'myMeter',
+        'value': 0
+    }
+
 
 ###################################################################################################
 # N
 
+class Nav(Base):
+    pass
+
+
+class NoScript(Base):
+    pass
+
 
 ###################################################################################################
 # O
+
+class Object(Base):
+    defaults = {
+        'data': None,
+        'width': 100,
+        'height': 100
+    }
+
+
+class Ol(Base):
+    pass
+
+
+class OlList(Ol):
+    _tag = 'ol'
+    ItemClass = Li
+    defaults = {
+        '_item_kwargs': {}
+    }
+
+    def get_content(self):
+        items = []
+        for arg in self.args:
+            item = self.ItemClass(arg, **self.get('_item_kwargs'))
+            items.append(try_draw(item))
+        return '\n'.join(items)
+
+
+class OptGroup(Base):
+    defaults = {
+        'label': 'myOptGroup'
+    }
+
+
+class Option(Base):
+    defaults = {
+        'value': 'value'
+    }
+
+
+class Output(Base):
+    defaults = {
+        'name': 'myOutput',
+        'for': 'myInput'
+    }
 
 
 ###################################################################################################
 # P
 
 class P(Base):
-    tag = 'p'
+    pass
 
+
+class Param(Base):
+    closing = False
+    defaults = {
+        'name': 'myParam',
+        'value': 'value',
+    }
+
+
+class Picture(Base):
+    pass
+
+
+class Pre(Base):
+    pass
+
+
+class Progress(Base):
+    defaults = {
+        'id': 'myProgress',
+        'value': 0,
+        'max': 100
+    }
 
 ###################################################################################################
 # Q
 
+class Q(Base):
+    pass
+
 
 ###################################################################################################
 # R
+
+class Rt(Base):
+    pass
+
+
+class Ruby(Base):
+    pass
 
 
 ###################################################################################################
 # S
 
 class S(Base):
-    tag = 's'
+    pass
+
+
+class Samp(Base):
+    pass
+
+
+class Script(Base):
+    pass
+
+
+class Section(Base):
+    pass
+
+
+class Selection(Base):
+    pass
 
 
 class Small(Base):
-    tag = 'small'
+    pass
+
+
+class Source(Base):
+    pass
+
+
+class Span(Base):
+    pass
 
 
 class Strong(Base):
-    tag = 'strong'
+    pass
+
+
+class Style(Base):
+    pass
+
+
+class Sub(Base):
+    pass
+
+
+class Summary(Base):
+    pass
+
+
+class Sup(Base):
+    pass
+
+
+class Svg(Base):
+    pass
 
 
 ###################################################################################################
 # T
+
+class Table(Base):
+    pass
+
+
+class TBody(Base):
+    pass
+
+
+class Td(Base):
+    pass
+
+
+class Template(Base):
+    pass
+
+
+class TextArea(Base):
+    pass
+
+
+class TFoot(Base):
+    pass
+
+
+class Th(Base):
+    pass
+
+
+class THead(Base):
+    pass
+
+
+class Time(Base):
+    pass
+
+
+class Title(Base):
+    pass
+
+
+class Tr(Base):
+    pass
+
+
+class Track(Base):
+    pass
 
 
 ###################################################################################################
 # U
 
 class U(Base):
-    tag = 'u'
+    pass
 
 
 class Ul(Base):
-    tag = 'ul'
+    pass
 
 
 class UlList(Ul):
@@ -327,8 +609,20 @@ class UlList(Ul):
 # V
 
 
+class Var(Base):
+    pass
+
+
+class Video(Base):
+    pass
+
+
 ###################################################################################################
 # W
+
+
+class Wbr(Base):
+    pass
 
 
 ###################################################################################################
