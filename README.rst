@@ -5,8 +5,13 @@ Bootlets is a Python library that provides a set of template objects which rende
 
 The templates can be subclassed and customised, or changed on the fly, to modify its' content or keyword arguments.
 
-
 see `Notebook <https://github.com/NixonInnes/bootlets/blob/master/example.ipynb>` for more detail
+
+
+Install
+-------
+`pip install bootlets`
+
 
 Links
 -----
