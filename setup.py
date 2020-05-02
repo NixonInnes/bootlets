@@ -1,6 +1,6 @@
 import setuptools
 
-with open('README.rst', 'r') as f:
+with open('README.md', 'r') as f:
     long_description = f.read()
 
 setuptools.setup(
@@ -8,7 +8,7 @@ setuptools.setup(
     version='0.0.1',
     description="Build HTML in Python",
     long_description=long_description,
-    long_description_content_type="test/restructured",
+    long_description_content_type="text/markdown",
     url="https://github.com/NixonInnes/bootlets",
     author="NixonInnes",
     author_email="nixoninnes@echonet.io",
