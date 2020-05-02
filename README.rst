@@ -1,10 +1,12 @@
 Bootlets
 ========
 
-Python class representation of HTML.
+Bootlets is a Python library that provides a set of template objects which render HTML code, so you never have to write any HTML again!
 
-The goal of this project is to create python classes which can be used like lego blocks to build HTML pages.
+The templates can be subclassed and customised, or changed on the fly, to modify its' content or keyword arguments.
 
+
+see `Notebook <https://github.com/NixonInnes/bootlets/blob/master/example.ipynb>` for more detail
 
 Links
 -----
