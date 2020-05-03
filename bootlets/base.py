@@ -2,6 +2,8 @@ import logging
 from inspect import isclass
 from typing import Optional, Any, Type, TypeVar, List, Dict, Callable
 
+from .funcs import list_to_str
+
 BaseType = TypeVar('BaseType', bound='Base')
 
 def try_draw(obj: Any) -> str:
@@ -129,8 +131,8 @@ class Base:
                     continue
                 if key == 'class_':
                     key = 'class'
-                if isinstance(value, (list, tuple)):
-                    value = ' '.join([v for v in value])
+                value = list_to_str(value)
+                key = key.replace('_', '-')
                 s += f' {key}="{value}"'
         return s
 

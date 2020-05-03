@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name='bootlets',
-    version='0.0.1',
+    version='0.0.2',
     description="Build HTML in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
