@@ -87,6 +87,17 @@ class Boot:
             content = Container(*content)
         return content, Container(*scripts)
 
+    def __repr__(self) -> str:
+        s = self.__class__.__qualname__ + "("
+        if self.args:
+            s += ", ".join([arg.__repr__() for arg in self.args])
+        if self.kwargs:
+            if self.args:
+                s += ", "
+            s += ", ".join([f"{k}={v.__repr__()}" for k, v in self._kwargs.items()])
+        s += ")"
+        return s
+
 
 def try_get_scripts(obj):
     scripts = []
