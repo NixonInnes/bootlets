@@ -1,16 +1,14 @@
-from .base import Base, try_draw
 from .decorators import overwrite
+from .funcs import try_draw
+from .html_base import Base
 
 
 ###################################################################################################
 # Special Tags
 
-class Container(Base):
-    _block = '{content}'
-
 
 class Comment(Base):
-    _block = '<!-- {content} -->'
+    _block = "<!-- {content} -->"
 
 
 ###################################################################################################
@@ -18,15 +16,11 @@ class Comment(Base):
 
 
 class A(Base):
-    defaults = {
-        'href': '#'
-    }
+    defaults = {"href": "#"}
 
 
 class Abbr(Base):
-    defaults = {
-        'title': 'attribute'
-    }
+    defaults = {"title": "attribute"}
 
 
 class Address(Base):
@@ -34,12 +28,7 @@ class Address(Base):
 
 
 class Area(Base):
-    defaults = {
-        'shape': 'rect',
-        'coords': '0,0,0,0',
-        'href': '#',
-        'alt': 'Area'
-    }
+    defaults = {"shape": "rect", "coords": "0,0,0,0", "href": "#", "alt": "Area"}
 
 
 class Article(Base):
@@ -57,6 +46,7 @@ class Audio(Base):
 ###################################################################################################
 # B
 
+
 class B(Base):
     pass
 
@@ -66,9 +56,7 @@ class Bdi(Base):
 
 
 class Bdo(Base):
-    defaults = {
-        'dir': 'rtl'
-    }
+    defaults = {"dir": "rtl"}
 
 
 class Blockquote(Base):
@@ -84,18 +72,15 @@ class Br(Base):
 
 
 class Button(Base):
-    defaults = {
-        'type': 'button'
-    }
+    defaults = {"type": "button"}
 
 
 ###################################################################################################
 # C
 
+
 class Canvas(Base):
-    defaults = {
-        'id': 'myCanvas'
-    }
+    defaults = {"id": "myCanvas"}
 
 
 class Caption(Base):
@@ -121,16 +106,14 @@ class ColGroup(Base):
 ###################################################################################################
 # D
 
+
 class Data(Base):
-    defaults = {
-        'value': 0
-    }
+    defaults = {"value": 0}
 
 
 class DataList(Base):
-    defaults = {
-        'id': 'MyDataList'
-    }
+    defaults = {"id": "MyDataList"}
+
 
 class Dd(Base):
     pass
@@ -149,16 +132,14 @@ class Dfn(Base):
 
 
 class Dialog(Base):
-    defaults = {
-        '_open': True
-    }
-    funcs = ['get_open']
-    _block = '<{tag}{kwargs}{get_open}>{content}</{tag}>'
+    defaults = {"_open": True}
+    funcs = ["get_open"]
+    _block = "<{tag}{kwargs}{get_open}>{content}</{tag}>"
 
     def get_open(self):
-        if self.defaults['_open']:
-            return ' open'
-        return ''
+        if self.defaults["_open"]:
+            return " open"
+        return ""
 
 
 class Div(Base):
@@ -169,10 +150,10 @@ class Dl(Base):
     pass
 
 
-@overwrite(get_content=('join_content_with', ' '))
+@overwrite(get_content=("join_content_with", " "))
 class DocType(Base):
-    _tag = 'DOCTYPE'
-    _block = '<!{tag} {content}>'
+    _tag = "DOCTYPE"
+    _block = "<!{tag} {content}>"
 
 
 class Dt(Base):
@@ -180,12 +161,12 @@ class Dt(Base):
 
 
 class DlDict(Dl):
-    _tag = 'dl'
+    _tag = "dl"
     TitleClass = Dt
     DescClass = Dd
     defaults = {
-        '_title_kwargs': {},
-        '_desc_kwargs': {},
+        "_title_kwargs": {},
+        "_desc_kwargs": {},
     }
 
     def get_content(self):
@@ -194,32 +175,31 @@ class DlDict(Dl):
         for arg in self.args:
             if isinstance(arg, dict):
                 for key, value in arg.items():
-                    title = self.TitleClass(key, **self.get('_title_kwargs'))
-                    desc = self.DescClass(value, **self.get('_desc_kwargs'))
+                    title = self.TitleClass(key, **self.get("_title_kwargs"))
+                    desc = self.DescClass(value, **self.get("_desc_kwargs"))
                     items.append(try_draw(title) + try_draw(desc))
             else:
-                #raise NotImplementerError()
+                # raise NotImplementerError()
                 # TODO: Raise warning or something better
                 continue
-        return '\n'.join(items)
+        return "\n".join(items)
 
 
 ###################################################################################################
 # E
+
 
 class Em(Base):
     pass
 
 
 class Embed(Base):
-    defaults = {
-        'src': 'default.jpg',
-        'width': 100,
-        'height': 100
-    }
+    defaults = {"src": "default.jpg", "width": 100, "height": 100}
+
 
 ###################################################################################################
 # F
+
 
 class FieldSet(Base):
     pass
@@ -238,10 +218,7 @@ class Footer(Base):
 
 
 class Form(Base):
-    defaults = {
-        'action': '#',
-        'method': 'POST'
-    }
+    defaults = {"action": "", "method": "POST"}
 
 
 ###################################################################################################
@@ -251,9 +228,14 @@ class Form(Base):
 ###################################################################################################
 # H
 
+
 class H(Base):
-    defaults = {'size': 1}
-    block = '<{tag}{size}{kwargs}>{content}</{tag}{size}>'
+    defaults = {"_size": 1}
+    funcs = ["get_tag"]
+    block = "<{get_tag}{kwargs}>{content}</{get_tag}>"
+
+    def get_tag(self):
+        return f"h{self.get('_size')}"
 
 
 class Head(Base):
@@ -271,31 +253,21 @@ class Hr(Base):
 ###################################################################################################
 # I
 
+
 class I(Base):
     pass
 
 
 class IFrame(Base):
-    defaults = {
-        'src': '#'
-    }
+    defaults = {"src": "#"}
 
 
 class Img(Base):
-    defaults = {
-        'src': 'default.jpg',
-        'height': 100,
-        'width': 100,
-        'alt': 'default'
-    }
+    defaults = {"src": "default.jpg", "height": 100, "width": 100, "alt": "default"}
 
 
 class Input(Base):
-    defaults = {
-        'type': 'text',
-        'id': 'myInput',
-        'name': 'myInput'
-    }
+    defaults = {"type": "text", "id": "myInput", "name": "myInput"}
 
 
 class Ins(Base):
@@ -309,6 +281,7 @@ class Ins(Base):
 ###################################################################################################
 # K
 
+
 class Kbd(Base):
     pass
 
@@ -316,10 +289,9 @@ class Kbd(Base):
 ###################################################################################################
 # L
 
+
 class Label(Base):
-    defaults = {
-        'for': 'myInput'
-    }
+    defaults = {"for": "myInput"}
 
 
 class Legend(Base):
@@ -331,24 +303,19 @@ class Li(Base):
 
 
 class Link(Base):
-    defaults = {
-        'rel': 'stylesheet',
-        'type': 'text/css',
-        'href': 'styles.css'
-    }
+    defaults = {"rel": "stylesheet", "type": "text/css", "href": "styles.css"}
 
 
 ###################################################################################################
 # M
+
 
 class Main(Base):
     pass
 
 
 class Map(Base):
-    defaults = {
-        'name': 'myMap'
-    }
+    defaults = {"name": "myMap"}
 
 
 class Mark(Base):
@@ -360,14 +327,12 @@ class Meta(Base):
 
 
 class Meter(Base):
-    defaults = {
-        'id': 'myMeter',
-        'value': 0
-    }
+    defaults = {"id": "myMeter", "value": 0}
 
 
 ###################################################################################################
 # N
+
 
 class Nav(Base):
     pass
@@ -380,12 +345,9 @@ class NoScript(Base):
 ###################################################################################################
 # O
 
+
 class Object(Base):
-    defaults = {
-        'data': None,
-        'width': 100,
-        'height': 100
-    }
+    defaults = {"data": None, "width": 100, "height": 100}
 
 
 class Ol(Base):
@@ -393,41 +355,33 @@ class Ol(Base):
 
 
 class OlList(Ol):
-    _tag = 'ol'
+    _tag = "ol"
     ItemClass = Li
-    defaults = {
-        '_item_kwargs': {}
-    }
+    defaults = {"_item_kwargs": {}}
 
     def get_content(self):
         items = []
         for arg in self.args:
-            item = self.ItemClass(arg, **self.get('_item_kwargs'))
+            item = self.ItemClass(arg, **self.get("_item_kwargs"))
             items.append(try_draw(item))
-        return '\n'.join(items)
+        return "\n".join(items)
 
 
 class OptGroup(Base):
-    defaults = {
-        'label': 'myOptGroup'
-    }
+    defaults = {"label": "myOptGroup"}
 
 
 class Option(Base):
-    defaults = {
-        'value': 'value'
-    }
+    defaults = {"value": "value"}
 
 
 class Output(Base):
-    defaults = {
-        'name': 'myOutput',
-        'for': 'myInput'
-    }
+    defaults = {"name": "myOutput", "for": "myInput"}
 
 
 ###################################################################################################
 # P
+
 
 class P(Base):
     pass
@@ -436,8 +390,8 @@ class P(Base):
 class Param(Base):
     closing = False
     defaults = {
-        'name': 'myParam',
-        'value': 'value',
+        "name": "myParam",
+        "value": "value",
     }
 
 
@@ -450,14 +404,12 @@ class Pre(Base):
 
 
 class Progress(Base):
-    defaults = {
-        'id': 'myProgress',
-        'value': 0,
-        'max': 100
-    }
+    defaults = {"id": "myProgress", "value": 0, "max": 100}
+
 
 ###################################################################################################
 # Q
+
 
 class Q(Base):
     pass
@@ -465,6 +417,7 @@ class Q(Base):
 
 ###################################################################################################
 # R
+
 
 class Rt(Base):
     pass
@@ -477,6 +430,7 @@ class Ruby(Base):
 ###################################################################################################
 # S
 
+
 class S(Base):
     pass
 
@@ -486,7 +440,14 @@ class Samp(Base):
 
 
 class Script(Base):
-    pass
+    defaults = {"_async": False}
+    funcs = ["get_async"]
+    _block = "<{tag}{kwargs}{get_async}>{content}</{tag}>"
+
+    def get_async(self):
+        if self.get("_async"):
+            return " async"
+        return ""
 
 
 class Section(Base):
@@ -535,6 +496,7 @@ class Svg(Base):
 
 ###################################################################################################
 # T
+
 
 class Table(Base):
     pass
@@ -587,6 +549,7 @@ class Track(Base):
 ###################################################################################################
 # U
 
+
 class U(Base):
     pass
 
@@ -597,16 +560,14 @@ class Ul(Base):
 
 class UlList(Ul):
     ItemClass = Li
-    defaults = {
-        '_item_kwargs': {}
-    }
+    defaults = {"_item_kwargs": {}}
 
     def get_content(self):
         items = []
         for arg in self.args:
-            item = self.ItemClass(arg, **self.get('_item_kwargs'))
+            item = self.ItemClass(arg, **self.get("_item_kwargs"))
             items.append(try_draw(item))
-        return '\n'.join(items)
+        return "\n".join(items)
 
 
 ###################################################################################################
@@ -639,4 +600,3 @@ class Wbr(Base):
 
 ###################################################################################################
 # Z
-
